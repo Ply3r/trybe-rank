@@ -1,18 +1,20 @@
 import { useState, useContext, useEffect } from 'react';
 import { gameContext } from '../providers/GameProvider';
 import { infoContext } from '../providers/InfoProvider';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import TypeCard from '../components/typeCard';
 import SelectDificulty from '../components/SelectDificulty';
 import '../css/Select-page.css';
 
 const SelectQuiz = () => {
-  const [selected, setSelected] = useState(null);
+  const [cards, setCards] = useState([]);
   const [active, setActive] = useState(null);
   const { questoes, tipos } = useContext(infoContext)
   const { resetGame } = useContext(gameContext);
 
   const createCards = () => {
-    const cards = tipos.map(({nome, cor, dificuldade}, index) => {
+    const selectedCards = cards.slice(0, 3)
+    const hold = selectedCards.map(({nome, cor, dificuldade}, index) => {
       const quantity = questoes.filter(({ tipo }) => tipo === nome).length
       return (
         <TypeCard
@@ -22,13 +24,12 @@ const SelectQuiz = () => {
           color={ cor }
           quantity={ quantity }
           dificulty={ dificuldade }
-          selected={ selected }
+          selected={ index === 1 }
           setActive={ setActive }
-          setSelected={ setSelected }
         />
       )
-    })
-    return cards;
+    });
+    return hold;
   };
 
   const renderCardActive = () => {
@@ -51,7 +52,6 @@ const SelectQuiz = () => {
             jogar
             selected={ active }
             setActive={ setActive }
-            setSelected={ setSelected }
           />
           <SelectDificulty color={ cor } />
         </div>
@@ -59,23 +59,43 @@ const SelectQuiz = () => {
     )
   }
 
+  const nextCard = () => {
+    const firstCard = cards[0];
+    const newCard = cards.slice(1)
+    setCards([...newCard, firstCard])
+  }
+
+  const prevCard = () => {
+    const lastIndex = cards.length - 1;
+    const lastCard = cards[lastIndex];
+    const newCard = [...cards].slice(0, lastIndex)
+    setCards([lastCard, ...newCard])
+  }
+
   useEffect(() => {
+    setCards(tipos)
     resetGame();
   }, [])
 
   return (
     <>
-      <div
-        onClick={ () => {
-          setSelected(null);
-        } }
-        className="backpage"
-      />
       <div className="select-page">
         <h1 className="hero-title">Seleção de Quiz</h1>
         <div className="type-cards-container">
           { active && renderCardActive() }
-          { createCards() }
+          <button
+            className="select-buttons"
+            onClick={ prevCard }
+          >
+            <FiChevronLeft />
+          </button>
+          { cards && createCards() }
+          <button
+            className="select-buttons"
+            onClick={ nextCard }
+          >
+            <FiChevronRight />
+          </button>
         </div>
       </div>
     </>

@@ -5,7 +5,7 @@ import { AiFillStar } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import ProgressBar from './progressBar';
 
-const TypeCard = ({ id, jogar, name, quantity, dificulty, color, selected, setSelected, setActive }) => {
+const TypeCard = ({ id, jogar, name, quantity, dificulty, color, selected, setActive }) => {
   const { questoes } = useContext(infoContext)
   const { setTipo, getGameQuestions } = useContext(gameContext);
 
@@ -19,8 +19,7 @@ const TypeCard = ({ id, jogar, name, quantity, dificulty, color, selected, setSe
 
   return (
     <div
-      onClick={ () => selected !== name ? setSelected(name) : setSelected(null) }
-      className={ `type-container ${selected === name ? 'active' : ''}` }
+      className={ `type-container ${selected ? 'active' : ''}` }
     >
       <div className="type-title">
         <div className="star-container">{ createStars() }</div>
@@ -29,9 +28,8 @@ const TypeCard = ({ id, jogar, name, quantity, dificulty, color, selected, setSe
       <div className="type-info">
         <ProgressBar
           id={ id }
-          active={ selected === name }
+          active={ selected }
           quantity={ quantity }
-          selected={ selected }
         />
         <p>{ `${quantity} questões` }</p>
         <Link to="/quiz">
